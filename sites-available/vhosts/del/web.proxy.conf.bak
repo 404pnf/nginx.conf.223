@@ -1,0 +1,15 @@
+server 	{
+	listen 12345;
+	location / {
+	#resolver 8.8.8.8;
+	# 404: don't use http:// , or https won't be proxied
+	#proxy_pass http://$host$request_uri;
+	proxy_pass $scheme://$host$request_uri;
+	# doesn't seem to work?
+	#allow	192.168.12.0/24;
+	#deny	all;
+	}
+	
+	#access_log logs/proxy.log;
+
+}
