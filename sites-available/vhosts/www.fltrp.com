@@ -5,23 +5,14 @@
 ## HTTP server.
 server {
     listen 80;
-    # wildcard in server name. see: http://wiki.nginx.org/HttpCoreModule#server_name
-    # .domina是一个特殊的表达，参见wiki
-    # 这里fltrp用了 *.fltrp 是因为我需要把 fltrp.com永久重新定向到www.fltrp.com
-    # 如果用 .fltrp 这个表达就不起作用
-    server_name .2u4u.com.cn v.chinadebate.org .ncehome.com;
-    # http://nginx.org/en/docs/http/server_names.html
-    #The names are tested in the following order:
-	#exact names;
-	#wildcard names starting with an asterisk: *.nginx.org;
-	#wildcard names ending with an asterisk: mail.*;
-	#and regular expressions in the order listed in the configuration file.
-	#The first match stops the search.
+    # 因为很多老的静态网站链接到www.fltrp.com/download/目录下的资源
+    # 为了不去修改那些静态文件。我们采取让nginx重定向那些目录到 old.fltrp.com/download的方式
+    server_name www.fltrp.com;
     #limit_conn arbeit 16;
 
     ## Access and error logs.
     #access_log  logs/access.log;
-    error_log   logs/error.log;
+    #error_log   logs/error.log;
 
     ## Include the blacklist.conf file.
     #include sites-available/blacklist.conf;
@@ -58,4 +49,10 @@ server {
         #report_uploads uploads;
     #}
     
+    # 在这里我重新定向 
+    # 参考： http://wiki.nginx.org/Pitfalls
+    location ^~ /download {
+	rewrite ^ $scheme://old.fltrp.com$request_uri permanent;
+	}	
+
 } # HTTP server
