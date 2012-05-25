@@ -1,0 +1,36 @@
+ server {
+        listen       80;
+        server_name  book.jiaxiaoquan.com;
+        #access_log  logs/host.access.log  main;
+        root   /var/www/book.jiaxiaoquan.com;
+        index  index.html index.htm index.php;
+
+        # the AddHeder directive for header cache contrl must come before 'location ~ .php ' bxy: strange!!??
+        location ~* .+\.(ico|jpg|gif|jpeg|css|js|flv|png|swf)$ {
+         expires max;
+	 if_modified_since off;
+         #proxy_cache cache;
+         #proxy_cache_key $host$uri#is_args$args;
+        }
+
+        location ~* .*\.(js|css)?$ {
+         expires  max;
+	 if_modified_since off;
+        }
+
+        # we need this 'location / '  since all drupal requests are handled by index.php
+        location / {
+	 fastcgi_pass phpcgi;
+         #proxy_pass       http://apache;
+         #proxy_set_header  X-Real-IP  $remote_addr;
+         #proxy_set_header Host $http_host;
+        }
+
+        location ~ .*\.php$ {
+	 fastcgi_pass phpcgi;
+         #proxy_pass       http://apache;
+         #proxy_set_header  X-Real-IP  $remote_addr;
+         #proxy_set_header Host $http_host;
+       }
+
+   }
