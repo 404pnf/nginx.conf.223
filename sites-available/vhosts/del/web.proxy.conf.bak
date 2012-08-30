@@ -1,15 +1,38 @@
-server 	{
-	listen 12345;
-	location / {
-	#resolver 8.8.8.8;
-	# 404: don't use http:// , or https won't be proxied
-	#proxy_pass http://$host$request_uri;
-	proxy_pass $scheme://$host$request_uri;
-	# doesn't seem to work?
-	#allow	192.168.12.0/24;
-	#deny	all;
-	}
+server {
+        listen 8888;
+	server_name 129.0.0.223;
+  # this serves as a open web proxy, not safe!!!
+  # somebody is using this one!!
+        location / {
+
+	# 参考： http://www.oschina.net/question/160674_23290
+
+	# 这个dns很重要。本机的要和服务器用同样的dns，偶则汇出bad gateway
+        resolver 129.0.0.3;
+        # 404: don't use http:// , or https won't be proxied
 	
-	#access_log logs/proxy.log;
+        proxy_pass $scheme://$host$request_uri;
+
+	proxy_set_header  Host $host;
+        proxy_set_header  X-Real-IP $host;
+        proxy_set_header  X-Forwarded-For $host;
+        proxy_set_header  cookie $http_cookie;
+
+	# 限制访问
+	# 不能用密码，否则你访问每一个url都需要输入用户名和密码
+	# 比如访问 example.com，这个网站有很多链接到 a.com b.com 上的图片
+	# 就需要输入3次用户名和密码
+        #auth_basic      "Tell me who you are";
+        #auth_basic_user_file    passwd/htpasswd;
+
+        # doesn't seem to work?
+	# 参考： http://wiki.nginx.org/HttpAccessModule
+        #deny 192.168.12.201; # 我禁止我自己的时候我的机器无法访问
+        #allow 192.168.12.0/201;  # 我的机器不在允许ip段之内，但可以访问？！
+        #deny all;
+        }
+
+        access_log logs/proxy.log;
 
 }
+
