@@ -1,0 +1,13 @@
+  server {
+        #limit_conn   gulag 10;
+	      listen	      80;
+        server_name   mmun.nse.cn;
+        root         /var/www/d7production/;
+        index        index.php index.html;
+    
+
+	      location / {
+	        proxy_pass http://apache;
+	      }
+
+  }
